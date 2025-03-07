@@ -15,7 +15,7 @@ logging.info("Database connected")
 cursor = conn.cursor()
 cursor.execute('''CREATE TABLE IF NOT EXISTS data (
                      id INTEGER PRIMARY KEY AUTOINCREMENT,
-                     timestamp TEXT,
+                     timestamp TIMESTAMP,
                      people INTEGER,
                      dogs INTEGER,
                      cats INTEGER,
@@ -77,9 +77,12 @@ if __name__ == '__main__':
             take_picture(filename)
             json = detect_object(filename)
             save_to_sqlite3(json)
-            delete_picture(filename)
-            logging.info("Sleeping for 5 seconds")
-            os.system("sleep 5")
+            if all(value == 0 for value in json.values()):
+                delete_picture(filename)
+            else:
+                logging.info("Image retained as it contains objects")
+            logging.info("Sleeping for 10 seconds")
+            os.system("sleep 10")
     except KeyboardInterrupt:
         print("Stopping...")
         conn.close()
